@@ -140,7 +140,7 @@ mkdirp('data', (err) => {
   if (err) throw err
 
   const stringified = JSON.stringify(data).replace(/\"([A-Za-z_]+)\":/g, '$1:')
-  fs.writeFile('data/data.js', `module.exports = ${stringified}`, (err) => {
+  fs.writeFile('data/data.js', `export default ${stringified}`, (err) => {
     if (err) throw err
   })
 })

@@ -19,22 +19,25 @@
   },
   "homepage": "https://github.com/missive/emoji-mart",
   "dependencies": {
-    "measure-scrollbar": "^0.1.0"
+    "measure-scrollbar": "^0.1.0",
+    "rollup": "^0.50.0",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-local-resolve": "^1.0.7"
   },
   "peerDependencies": {
     "react": "^0.14.0 || ^15.0.0-0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-core": "6.7.2",
-    "babel-loader": "6.2.4",
+    "babel-core": "^6.7.2",
+    "babel-loader": "^6.2.4",
     "babel-plugin-transform-define": "^1.3.0",
-    "babel-plugin-transform-es2015-destructuring": "6.9.0",
-    "babel-plugin-transform-object-rest-spread": "6.8.0",
+    "babel-plugin-transform-es2015-destructuring": "^6.9.0",
+    "babel-plugin-transform-object-rest-spread": "^6.8.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.8",
     "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-es2015": "6.6.0",
-    "babel-preset-react": "6.5.0",
+    "babel-preset-es2015": "^6.6.0",
+    "babel-preset-react": "^6.5.0",
     "babel-runtime": "^6.23.0",
     "emoji-datasource": "^3.0.0",
     "emojilib": "^2.2.1",

@@ -1,5 +1,5 @@
 import buildSearch from './build-search'
-import data from '../../data'
+import data from '../../data/index'
 
 const COLONS_REGEX = /^(?:\:([^\:]+)\:)(?:\:skin-tone-(\d)\:)?$/
 const SKINS = [
