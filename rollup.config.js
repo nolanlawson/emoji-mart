@@ -17,17 +17,8 @@ export default {
     localResolve(),
     svgToJsx(),
     babel({
-      exclude: 'node_modules/**',
       runtimeHelpers: true,
-      presets: [['es2015', { modules: false }], 'react'],
-      plugins: [
-        'transform-object-rest-spread',
-        'transform-runtime',
-        'transform-react-remove-prop-types',
-        [
-          'transform-define', 'scripts/define.js'
-        ]
-      ]
+      exclude: 'node_modules/**'
     }),
     replace({
       EMOJI_DATASOURCE_VERSION: `'${pack.devDependencies['emoji-datasource']}'`
