@@ -1,5 +1,6 @@
 import babel from 'rollup-plugin-babel'
 import localResolve from 'rollup-plugin-local-resolve';
+import svg from './rollup-plugin-svg-to-jsx.js'
 
 export default {
   input: './src/index.js',
@@ -9,6 +10,7 @@ export default {
   },
   plugins: [
     localResolve(),
+    svg(),
     babel({
       exclude: 'node_modules/**',
       runtimeHelpers: true,
