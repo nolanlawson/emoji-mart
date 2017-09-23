@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import * as SVGs from '../svgs/index'
+import * as SVGs from '../svgs'
 
 export default class Anchors extends React.Component {
   constructor(props) {

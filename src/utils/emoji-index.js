@@ -1,4 +1,4 @@
-import data from '../../data/index'
+import data from '../../data'
 import { getData, getSanitizedData, intersect } from '.'
 
 var index = {}

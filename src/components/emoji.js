@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import data from '../../data/index'
+import data from '../../data'
 
-import { getData, getSanitizedData, unifiedToNative } from '../utils/index'
+import { getData, getSanitizedData, unifiedToNative } from '../utils'
 
 const SHEET_COLUMNS = 49
 
