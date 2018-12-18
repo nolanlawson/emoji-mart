@@ -365,6 +365,29 @@ Apple / Google / Twitter / EmojiOne / Messenger / Facebook
 ## Not opinionated
 **Emoji Mart** doesn’t automatically insert anything into a text input, nor does it show or hide itself. It simply returns an `emoji` object. It’s up to the developer to mount/unmount (it’s fast!) and position the picker. You can use the returned object as props for the `EmojiMart.Emoji` component. You could also use `emoji.colons` to insert text into a textarea or `emoji.native` to use the emoji.
 
+## Modern/ES builds
+
+**Emoji Mart** comes in three flavors:
+
+```
+dist
+dist-es
+dist-modern
+```
+
+`dist` is the standard build with the highest level of compatibility.
+`dist-es` is the same, but uses ES modules for better tree-shaking.
+`dist-modern` removes features not needed in modern browsers (essentially everything except
+[object spread](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax),
+part of ES2018 and thus still not widely supported).
+
+The default builds are `dist` and `dist-es`. (In Webpack, one or the other will be chosen based on your [resolve main fields](https://webpack.js.org/configuration/resolve/#resolve-mainfields).)
+If you want to use `dist-modern`, you must explicitly import it:
+
+```js
+import { Picker } from 'emoji-mart/dist-modern/index.js'
+```
+
 ## Development
 ```sh
 $ yarn build
