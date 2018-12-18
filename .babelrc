@@ -23,7 +23,16 @@
 
     "transform-object-rest-spread",
     "transform-runtime",
-    "transform-react-remove-prop-types",
+    [
+      "transform-react-remove-prop-types",
+      {
+        "removeImport": true,
+        "additionalLibraries": [
+          "../utils/shared-props",
+          "../../utils/shared-props"
+        ]
+      }
+    ],
     [
       "transform-define", "scripts/define.js"
     ],
