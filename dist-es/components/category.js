@@ -29,8 +29,6 @@ var Category = function (_React$Component) {
   _createClass(Category, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.parent = this.container.parentNode;
-
       this.margin = 0;
       this.minMargin = 0;
 
@@ -81,16 +79,16 @@ var Category = function (_React$Component) {
       var top = _container$getBoundin.top;
       var height = _container$getBoundin.height;
 
-      var _parent$getBoundingCl = this.parent.getBoundingClientRect();
+      var _container$parentNode = this.container.parentNode.getBoundingClientRect();
 
-      var parentTop = _parent$getBoundingCl.top;
+      var parentTop = _container$parentNode.top;
 
       var _label$getBoundingCli = this.label.getBoundingClientRect();
 
       var labelHeight = _label$getBoundingCli.height;
 
 
-      this.top = top - parentTop + this.parent.scrollTop;
+      this.top = top - parentTop + this.container.parentNode.scrollTop;
 
       if (height == 0) {
         this.maxMargin = 0;

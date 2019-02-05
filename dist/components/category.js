@@ -36,8 +36,6 @@ class Category extends _react2.default.Component {
   }
 
   componentDidMount() {
-    this.parent = this.container.parentNode;
-
     this.margin = 0;
     this.minMargin = 0;
 
@@ -81,10 +79,10 @@ class Category extends _react2.default.Component {
 
   memoizeSize() {
     var { top, height } = this.container.getBoundingClientRect();
-    var { top: parentTop } = this.parent.getBoundingClientRect();
+    var { top: parentTop } = this.container.parentNode.getBoundingClientRect();
     var { height: labelHeight } = this.label.getBoundingClientRect();
 
-    this.top = top - parentTop + this.parent.scrollTop;
+    this.top = top - parentTop + this.container.parentNode.scrollTop;
 
     if (height == 0) {
       this.maxMargin = 0;
