@@ -31,11 +31,17 @@ export default class SkinsDot extends Skins {
       )
     }
 
-    return (
-      <div className={`emoji-mart-skin-swatches${opened ? ' opened' : ''}`}>
-        {skinToneNodes}
-      </div>
-    )
+    const selectedSkinNode = skinToneNodes[skin]
+
+    return (<div>
+      <button className={`emoji-mart-skin-swatches${opened ? ' opened' : ''}`}
+           aria-haspopup="true"
+           aria-expanded={!!opened}
+      >
+        {selectedSkinNode}
+      </button>
+      {skinToneNodes}
+    </div>)
   }
 }
 

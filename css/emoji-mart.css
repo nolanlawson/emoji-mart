@@ -254,6 +254,8 @@
   border: 1px solid #d9d9d9;
   border-radius: 12px;
   background-color: #fff;
+  margin: 0;
+  box-shadow: none;
 }
 
 .emoji-mart-skin-swatches.custom {
