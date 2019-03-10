@@ -38,6 +38,14 @@ var Search = function (_React$PureComponent) {
   }
 
   _createClass(Search, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      // in some cases the input may already be pre-populated
+      if (this.input.value) {
+        this.search(this.input.value);
+      }
+    }
+  }, {
     key: 'search',
     value: function search(value) {
       if (value == '') this.setState({

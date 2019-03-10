@@ -43,6 +43,13 @@ class Search extends _react2.default.PureComponent {
     this.handleChange = (0, _index.throttleIdleTask)(this.handleChange.bind(this));
   }
 
+  componentDidMount() {
+    // in some cases the input may already be pre-populated
+    if (this.input.value) {
+      this.search(this.input.value);
+    }
+  }
+
   search(value) {
     if (value == '') this.setState({
       icon: _svgs.search.search,
