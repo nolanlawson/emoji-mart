@@ -187,9 +187,10 @@ export default class Category extends React.Component {
           data-name={name}
           className="emoji-mart-category-label"
         >
-          <span style={labelSpanStyles}
-                ref={this.setLabelRef}
-                aria-hidden={true /* already labeled by the section aria-label */}
+          <span
+            style={labelSpanStyles}
+            ref={this.setLabelRef}
+            aria-hidden={true /* already labeled by the section aria-label */}
           >
             {i18n.categories[id]}
           </span>
