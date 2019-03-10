@@ -4,6 +4,11 @@ const genDefaultConfig = require('@storybook/react/dist/server/config/defaults/w
 module.exports = (baseConfig, env) => {
   const config = genDefaultConfig(baseConfig, env);
 
+  config.resolve.alias = {
+    'react': 'preact-compat',
+    'react-dom': 'preact-compat',
+  }
+
   config.module.rules = [
     {
       test: /\.js$/,
