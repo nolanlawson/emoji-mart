@@ -20,6 +20,13 @@ export default class Search extends React.PureComponent {
     this.handleKeyUp = this.handleKeyUp.bind(this)
   }
 
+  componentDidMount() {
+    // in some cases the input may already be pre-populated
+    if (this.input.value) {
+      this.search(this.input.value)
+    }
+  }
+
   search(value) {
     if (value == '')
       this.setState({
