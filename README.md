@@ -58,6 +58,7 @@ import { Picker } from 'emoji-mart'
 #### I18n
 ```js
 search: 'Search',
+emojilist: 'List of emoji', // Accessible title for list of emoji
 notfound: 'No Emoji Found',
 skintext: 'Choose your default skin tone',
 categories: {
