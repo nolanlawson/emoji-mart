@@ -51,8 +51,8 @@ export default class SkinsDot extends Skins {
 
     return (
       <section
-          className={`emoji-mart-skin-swatches${opened ? ' opened' : ''}`}
-          aria-label={i18n.skintext}
+        className={`emoji-mart-skin-swatches${opened ? ' opened' : ''}`}
+        aria-label={i18n.skintext}
       >
         {skinToneNodes}
       </section>
