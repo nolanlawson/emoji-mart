@@ -40,7 +40,7 @@ storiesOf('Picker', module)
       native={boolean('Unicode', true)}
       set={select('Emoji pack', SETS, SETS[0])}
       emojiSize={number('Emoji size', 24)}
-      perLine={number('Per line', 9)}
+      perLine={50}
       title={text('Idle text', 'Your Title Here')}
       emoji={text('Idle emoji', 'department_store')}
       notFoundEmoji={text('Not found emoji', 'sleuth_or_spy')}
@@ -214,3 +214,16 @@ storiesOf('Headless Search', module)
       </div>
     )
   })
+
+storiesOf('Cannot read property name', module)
+    .addDecorator(withKnobs)
+    .add('Default', () => {
+      return (
+          <Picker
+              onClick={() => console.log('click')}
+              perLine={9}
+              showSkinTones={false}
+              title=""
+          />
+      )
+    })
