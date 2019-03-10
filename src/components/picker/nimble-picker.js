@@ -21,6 +21,7 @@ const I18N = {
   clear: 'Clear', // Accessible label on "clear" button
   notfound: 'No Emoji Found',
   skintext: 'Choose your default skin tone',
+  categorieslabel: 'Emoji categories',
   categories: {
     search: 'Search Results',
     recent: 'Frequently Used',
