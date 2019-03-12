@@ -98,6 +98,7 @@ const NimbleEmoji = (props) => {
     style = {},
     children = props.children,
     className = 'emoji-mart-emoji',
+    label = [unified && unifiedToNative(unified)].concat(short_names).filter(Boolean).join(', '),
     title = null
 
   if (!unified && !custom) {
@@ -173,7 +174,7 @@ const NimbleEmoji = (props) => {
 
   if (props.html) {
     style = _convertStyleToCSS(style)
-    return `<button style='${style}' ${
+    return `<button style='${style}' aria-label='${label}' ${
       title ? `title='${title}'` : ''
     } class='${className}'>${children || ''}</button>`
   } else {
@@ -183,6 +184,7 @@ const NimbleEmoji = (props) => {
         onClick={(e) => _handleClick(e, props)}
         onMouseEnter={(e) => _handleOver(e, props)}
         onMouseLeave={(e) => _handleLeave(e, props)}
+        aria-label={label}
         title={title}
         className={className}
       >
