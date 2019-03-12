@@ -98,7 +98,8 @@ const NimbleEmoji = (props) => {
     style = {},
     children = props.children,
     className = 'emoji-mart-emoji',
-    label = [unified && unifiedToNative(unified)].concat(short_names).filter(Boolean).join(', '),
+    nativeEmoji = unified && unifiedToNative(unified),
+    label = [nativeEmoji].concat(short_names).filter(Boolean).join(', '),
     title = null
 
   if (!unified && !custom) {
@@ -116,7 +117,7 @@ const NimbleEmoji = (props) => {
   if (props.native && unified) {
     className += ' emoji-mart-emoji-native'
     style = { fontSize: props.size }
-    children = unifiedToNative(unified)
+    children = nativeEmoji
 
     if (props.forceSize) {
       style.display = 'inline-block'
