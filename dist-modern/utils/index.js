@@ -190,16 +190,19 @@ function measureScrollbar() {
 // Use requestIdleCallback() if available, else fall back to setTimeout().
 // Throttle so as not to run too frequently.
 function throttleIdleTask(func) {
-  const queue = typeof requestIdleCallback === 'function' ? requestIdleCallback : setTimeout;
-  const clear = typeof cancelIdleCallback === 'function' ? cancelIdleCallback : clearTimeout;
+  const doIdleTask = typeof requestIdleCallback === 'function' ? requestIdleCallback : setTimeout;
 
-  let id;
+  let running = false;
 
   return function throttled() {
-    if (id) {
-      clear(id);
+    if (running) {
+      return;
     }
-    id = queue(func);
+    running = true;
+    doIdleTask(() => {
+      running = false;
+      func();
+    });
   };
 }
 
