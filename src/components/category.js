@@ -15,13 +15,6 @@ export default class Category extends React.Component {
     this.setLabelRef = this.setLabelRef.bind(this)
   }
 
-  componentDidMount() {
-    this.margin = 0
-    this.minMargin = 0
-
-    this.memoizeSize()
-  }
-
   shouldComponentUpdate(nextProps, nextState) {
     var {
         name,
@@ -61,36 +54,6 @@ export default class Category extends React.Component {
     }
 
     return shouldUpdate
-  }
-
-  memoizeSize() {
-    var parent = this.container.parentElement
-    var { top, height } = this.container.getBoundingClientRect()
-    var { top: parentTop } = parent.getBoundingClientRect()
-    var { height: labelHeight } = this.label.getBoundingClientRect()
-
-    this.top = top - parentTop + parent.scrollTop
-
-    if (height == 0) {
-      this.maxMargin = 0
-    } else {
-      this.maxMargin = height - labelHeight
-    }
-  }
-
-  handleScroll(scrollTop) {
-    var margin = scrollTop - this.top
-    margin = margin < this.minMargin ? this.minMargin : margin
-    margin = margin > this.maxMargin ? this.maxMargin : margin
-
-    if (margin == this.margin) return
-
-    if (!this.props.hasStickyPosition) {
-      this.label.style.top = `${margin}px`
-    }
-
-    this.margin = margin
-    return true
   }
 
   getEmojis() {
@@ -164,7 +127,13 @@ export default class Category extends React.Component {
       }
     }
 
-    if (!hasStickyPosition) {
+    if (hasStickyPosition) {
+      labelSpanStyles = {
+        position: 'sticky',
+        top: '0'
+      }
+    } else {}
+    if (hasStickyPosition) {
       labelStyles = {
         height: 28,
       }

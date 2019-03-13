@@ -260,14 +260,10 @@ export default class NimblePicker extends React.PureComponent {
 
     var component = this.categoryRefs['category-1']
     if (component) {
-      let maxMargin = component.maxMargin
       component.forceUpdate()
 
       window.requestAnimationFrame(() => {
         if (!this.scroll) return
-        component.memoizeSize()
-        if (maxMargin == component.maxMargin) return
-
         this.updateCategoriesSize()
         this.handleScrollPaint()
 
@@ -429,11 +425,6 @@ export default class NimblePicker extends React.PureComponent {
   }
 
   updateCategoriesSize() {
-    for (let i = 0, l = this.categories.length; i < l; i++) {
-      let component = this.categoryRefs[`category-${i}`]
-      if (component) component.memoizeSize()
-    }
-
     if (this.scroll) {
       let target = this.scroll
       this.scrollHeight = target.scrollHeight
