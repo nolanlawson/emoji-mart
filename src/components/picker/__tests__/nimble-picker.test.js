@@ -2,11 +2,10 @@ import React from 'react'
 import NimblePicker from '../nimble-picker'
 import renderer from 'react-test-renderer'
 
-import appleData from '../../../../data/apple'
-import data from "../../../../data/all"
+import data from '../../../../data/apple'
 
 test('Renders <NimblePicker> component', () => {
-    const props = { data: appleData }
+    const props = { data }
     const component = renderer.create(
         <NimblePicker {...props} />,
     );

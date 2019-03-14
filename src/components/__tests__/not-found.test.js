@@ -2,8 +2,7 @@ import React from 'react'
 import NotFound from '../not-found'
 import renderer from 'react-test-renderer'
 
-import appleData from '../../../data/apple'
-
+import data from '../../../data/apple'
 
 const i18n = {
     search: 'Search',
@@ -39,7 +38,7 @@ test('Renders <NotFound> component', () => {
     const emojiProps = {"native":true,"skin":1,"size":24,"set":"apple","sheetSize":64,"forceSize":true,"tooltip":false}
     const component = renderer.create(
         <NotFound
-            data={appleData}
+            data={data}
             notFound={() => {}}
             notFoundEmoji={"sleuth_or_spy"}
             emojiProps={emojiProps}
