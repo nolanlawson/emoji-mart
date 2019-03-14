@@ -74,7 +74,6 @@
     "build": "npm run clean && npm run build:dist",
     "watch": "BABEL_ENV=cjs babel src --watch --out-dir dist --copy-files --ignore '**/*.test.js'",
     "start": "npm run watch",
-    "stats": "webpack --config ./spec/webpack.config.js --json > spec/stats.json",
     "react:clean": "rimraf node_modules/{react,react-dom,react-addons-test-utils}",
     "react:14": "npm run react:clean && npm i react@^0.14 react-dom@^0.14 react-addons-test-utils@^0.14 --save-dev",
     "react:15": "npm run react:clean && npm i react@^15 react-dom@^15 react-addons-test-utils@^15 --save-dev",
@@ -83,7 +82,7 @@
     "prepublishOnly": "npm run build",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "prettier": "prettier --write \"{src,scripts,spec}/**/*.js\"",
+    "prettier": "prettier --write \"{src,scripts}/**/*.js\"",
     "prepare": "npm run build:dist"
   },
   "size-limit": [
