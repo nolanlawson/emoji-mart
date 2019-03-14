@@ -4,9 +4,26 @@ import renderer from 'react-test-renderer'
 
 import data from '../../../../data/apple'
 
-test('Renders <NimblePicker> component', () => {
-  const props = { data }
-  const component = renderer.create(<NimblePicker {...props} />)
-  let tree = component.toJSON()
-  expect(tree).toMatchSnapshot()
+function render(props = {}) {
+  const defaultProps = { data }
+  const component = renderer.create(
+    <NimblePicker {...props} {...defaultProps} />,
+  )
+  return component.getInstance()
+}
+
+test('shows 10 categories by default', () => {
+  const subject = render()
+  expect(subject.categories.length).toEqual(10)
+})
+
+test('will not show some categories based upon our filter', () => {
+  const subject = render({ emojisToShowFilter: () => false })
+  expect(subject.categories.length).toEqual(2)
+})
+
+test('maintains category ids after it is filtered', () => {
+  const subject = render({ emojisToShowFilter: () => true })
+  const categoriesWithIds = subject.categories.filter((category) => category.id)
+  expect(categoriesWithIds.length).toEqual(10)
 })
