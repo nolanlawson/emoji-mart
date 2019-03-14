@@ -1,4 +1,3 @@
-// Link.react.test.js
 import React from 'react'
 import NotFound from '../not-found'
 import renderer from 'react-test-renderer'
