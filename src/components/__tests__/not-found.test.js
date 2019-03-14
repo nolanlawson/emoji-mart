@@ -36,14 +36,14 @@ const i18n = {
     },
 }
 
-test('Renders NotFound', () => {
+test('Renders <NotFound> component', () => {
     const emojiProps = {"native":true,"skin":1,"size":24,"set":"apple","sheetSize":64,"forceSize":true,"tooltip":false}
     const component = renderer.create(
         <NotFound
             data={appleData}
             notFound={() => {}}
-    notFoundEmoji={"sleuth_or_spy"}
-    emojiProps={emojiProps}
+            notFoundEmoji={"sleuth_or_spy"}
+            emojiProps={emojiProps}
             i18n={i18n}
     />,
     );
