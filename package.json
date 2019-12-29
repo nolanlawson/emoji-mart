@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/missive/emoji-mart",
   "dependencies": {
+    "@babel/runtime": "^7.0.0",
     "prop-types": "^15.6.0"
   },
   "peerDependencies": {
@@ -31,7 +32,6 @@
     "@babel/plugin-transform-runtime": "^7.7.6",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "7.0.0",
-    "@babel/runtime": "^7.0.0",
     "@storybook/addon-actions": "^3.2.11",
     "@storybook/addon-knobs": "^3.2.10",
     "@storybook/addon-links": "^3.2.10",
