@@ -12,9 +12,6 @@ module.exports = {
       },
     ],
   ],
-  ignore: [
-    '**/__tests__/*'
-  ],
   env: {
     'legacy-es': {
       presets: [
@@ -59,7 +56,7 @@ module.exports = {
           {
             targets: {
               node: 'current',
-            },
+            }
           },
         ],
       ],
