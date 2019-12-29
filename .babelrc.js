@@ -21,9 +21,6 @@ module.exports = {
         [
           '@babel/preset-env',
           {
-            targets: {
-              ie: '11',
-            },
             modules: false,
           },
         ],
@@ -34,9 +31,6 @@ module.exports = {
         [
           '@babel/preset-env',
           {
-            targets: {
-              ie: '11',
-            },
             modules: 'cjs',
           },
         ],

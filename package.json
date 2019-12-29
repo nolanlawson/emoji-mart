@@ -66,7 +66,7 @@
     "build:modern": "BABEL_ENV=modern babel src --out-dir dist-modern",
     "build:docs": "cp css/emoji-mart.css docs && webpack --config ./docs/webpack.config.js",
     "build": "npm run clean && npm run build:dist",
-    "watch": "BABEL_ENV=cjs babel src --watch --out-dir dist",
+    "watch": "BABEL_ENV=legacy-cjs babel src --watch --out-dir dist",
     "start": "npm run watch",
     "react:clean": "rimraf node_modules/{react,react-dom,react-addons-test-utils}",
     "react:14": "npm run react:clean && npm i react@^0.14 react-dom@^0.14 react-addons-test-utils@^0.14 --save-dev",
