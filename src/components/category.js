@@ -124,7 +124,6 @@ export default class Category extends React.Component {
         className="emoji-mart-category"
         aria-label={label}
         style={containerStyles}
-        data-category-id={id}
       >
         <div data-name={name} className="emoji-mart-category-label">
           <span
