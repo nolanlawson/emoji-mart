@@ -15,7 +15,6 @@ import Category from '../category'
 import Preview from '../preview'
 import Search from '../search'
 import { PickerDefaultProps } from '../../utils/shared-default-props'
-import debounce from '../../utils/debounce'
 
 const I18N = {
   search: 'Search',
@@ -189,6 +188,7 @@ export default class NimblePicker extends React.PureComponent {
     this.setSearchRef = this.setSearchRef.bind(this)
     this.handleSearch = this.handleSearch.bind(this)
     this.setScrollRef = this.setScrollRef.bind(this)
+    this.setSentinelRef = this.setSentinelRef.bind(this)
     this.handleEmojiOver = this.handleEmojiOver.bind(this)
     this.handleEmojiLeave = this.handleEmojiLeave.bind(this)
     this.handleEmojiClick = this.handleEmojiClick.bind(this)
@@ -196,8 +196,8 @@ export default class NimblePicker extends React.PureComponent {
     this.setPreviewRef = this.setPreviewRef.bind(this)
     this.handleSkinChange = this.handleSkinChange.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
-    this.handleScroll = debounce(this.handleScroll.bind(this), 70)
-    this.handleIntersection = this.handleIntersection.bind(this)
+    this.handleCategoryIntersection = this.handleCategoryIntersection.bind(this)
+    this.handleSentinelIntersection = this.handleSentinelIntersection.bind(this)
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -218,8 +218,12 @@ export default class NimblePicker extends React.PureComponent {
   componentWillUnmount() {
     this.SEARCH_CATEGORY.emojis = null
     clearTimeout(this.leaveTimeout)
-    if (this.intersectionObserver) {
-      this.intersectionObserver.disconnect()
+    console.log('unmount')
+    if (this.categoryObserver) {
+      this.categoryObserver.disconnect()
+    }
+    if (this.sentinelObserver) {
+      this.sentinelObserver.disconnect()
     }
   }
 
@@ -273,15 +277,8 @@ export default class NimblePicker extends React.PureComponent {
     }
   }
 
-  handleScroll() {
-    const { scrollTop, clientHeight, scrollHeight } = this.scroll
-    if (scrollTop + clientHeight >= scrollHeight) {
-      const activeCategory = this.categories[this.categories.length - 1]
-      this.updateActiveCategory(activeCategory)
-    }
-  }
-
-  handleIntersection(entries) {
+  handleCategoryIntersection(entries) {
+    console.log('handleCategoryIntersection')
     const entry = entries.find((entry) => entry.isIntersecting)
 
     let activeCategory = null
@@ -292,6 +289,15 @@ export default class NimblePicker extends React.PureComponent {
       activeCategory = this.categories.find(({ id }) => id === categoryId)
     }
     this.updateActiveCategory(activeCategory)
+  }
+
+  handleSentinelIntersection(entries) {
+    console.log('handleSentinelIntersection')
+    if (entries[0].isIntersecting) {
+      this.updateActiveCategory(this.categories[this.categories.length - 1])
+    } else {
+      this.updateActiveCategory(this.categories[this.categories.length - 2])
+    }
   }
 
   updateActiveCategory(activeCategory) {
@@ -405,20 +411,48 @@ export default class NimblePicker extends React.PureComponent {
 
   setScrollRef(c) {
     this.scroll = c
-    this.scroll.addEventListener('scroll', this.handleScroll)
-    if (typeof IntersectionObserver !== 'undefined') {
-      this.intersectionObserver = new IntersectionObserver(
-        this.handleIntersection,
+    this.createCategoryObserver()
+    this.createSentinelObserver()
+  }
+
+  setSentinelRef(c) {
+    this.sentinel = c
+    this.createSentinelObserver()
+  }
+
+  createCategoryObserver () {
+    console.log('createCategoryObserver', this.scroll)
+    if (this.scroll && typeof IntersectionObserver !== 'undefined') {
+      if (this.categoryObserver) {
+        this.categoryObserver.disconnect()
+      }
+      this.categoryObserver = new IntersectionObserver(
+        this.handleCategoryIntersection,
         {
-          root: c,
+          root: this.scroll,
           rootMargin: '0px 0px -100% 0px', // only observe the top edge of the scroll element
         },
       )
       for (let i = 0, l = this.categories.length; i < l; i++) {
         const component = this.categoryRefs[`category-${i}`]
         const label = component.getLabelRef()
-        this.intersectionObserver.observe(label)
+        this.categoryObserver.observe(label)
       }
+    }
+  }
+
+  createSentinelObserver () {
+    console.log('createSentinelObserver', this.scroll, this.sentinel)
+    if (this.scroll && this.sentinel && typeof IntersectionObserver !== 'undefined') {
+      if (this.sentinelObserver) {
+        this.sentinelObserver.disconnect()
+      }
+      // The sentinel is used to handle a special case - when we scroll to the bottom of the
+      // scroll container, then the last category should be the one that is active.
+      this.sentinelObserver = new IntersectionObserver(this.handleSentinelIntersection, {
+        root: this.scroll
+      })
+      this.sentinelObserver.observe(this.sentinel)
     }
   }
 
@@ -529,10 +563,13 @@ export default class NimblePicker extends React.PureComponent {
                 }}
                 notFound={notFound}
                 notFoundEmoji={notFoundEmoji}
-                intersectionObserver={this.intersectionObserver}
               />
             )
           })}
+          <span
+            className="emoji-mart-sentinel"
+                ref={this.setSentinelRef}>
+          </span>
         </div>
 
         {(showPreview || showSkinTones) && (
