@@ -167,11 +167,6 @@ export default class Category extends React.Component {
             emojiProps={emojiProps}
           />
         )}
-        <span
-          className="emoji-mart-sentinel"
-          data-category-id={id}
-          ref={this.setSentinelRef}>
-          </span>
       </section>
     )
   }
