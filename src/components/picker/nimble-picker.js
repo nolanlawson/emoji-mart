@@ -215,8 +215,10 @@ export default class NimblePicker extends React.PureComponent {
 
   componentWillUnmount() {
     this.SEARCH_CATEGORY.emojis = null
-
     clearTimeout(this.leaveTimeout)
+    if (this.intersectionObserver) {
+      this.intersectionObserver.disconnect()
+    }
   }
 
   handleEmojiOver(emoji) {
@@ -394,7 +396,7 @@ export default class NimblePicker extends React.PureComponent {
   setScrollRef(c) {
     this.scroll = c
     if (typeof IntersectionObserver !== 'undefined') {
-      const intersectionObserver = new IntersectionObserver(
+      this.intersectionObserver = new IntersectionObserver(
         this.handleIntersection,
         {
           root: c,
@@ -404,7 +406,7 @@ export default class NimblePicker extends React.PureComponent {
       for (let i = 0, l = this.categories.length; i < l; i++) {
         const component = this.categoryRefs[`category-${i}`]
         const label = component.getLabelRef()
-        intersectionObserver.observe(label)
+        this.intersectionObserver.observe(label)
       }
     }
   }
