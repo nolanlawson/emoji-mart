@@ -393,17 +393,19 @@ export default class NimblePicker extends React.PureComponent {
 
   setScrollRef(c) {
     this.scroll = c
-    const intersectionObserver = new IntersectionObserver(
-      this.handleIntersection,
-      {
-        root: c,
-        rootMargin: '0px 0px -100% 0px', // only observe the top edge of the scroll element
-      },
-    )
-    for (let i = 0, l = this.categories.length; i < l; i++) {
-      const component = this.categoryRefs[`category-${i}`]
-      const label = component.getLabelRef()
-      intersectionObserver.observe(label)
+    if (typeof IntersectionObserver !== 'undefined') {
+      const intersectionObserver = new IntersectionObserver(
+        this.handleIntersection,
+        {
+          root: c,
+          rootMargin: '0px 0px -100% 0px', // only observe the top edge of the scroll element
+        },
+      )
+      for (let i = 0, l = this.categories.length; i < l; i++) {
+        const component = this.categoryRefs[`category-${i}`]
+        const label = component.getLabelRef()
+        intersectionObserver.observe(label)
+      }
     }
   }
 
