@@ -270,7 +270,7 @@ export default class NimblePicker extends React.PureComponent {
   }
 
   handleIntersection(entries) {
-    const entry = entries.find(entry => entry.isIntersecting)
+    const entry = entries.find((entry) => entry.isIntersecting)
 
     let activeCategory = null
     if (this.SEARCH_CATEGORY.emojis) {
@@ -281,7 +281,7 @@ export default class NimblePicker extends React.PureComponent {
     }
     if (activeCategory) {
       const { anchors } = this
-      const  { name: categoryName } = activeCategory
+      const { name: categoryName } = activeCategory
 
       if (anchors.state.selected !== categoryName) {
         anchors.setState({ selected: categoryName })
@@ -376,7 +376,7 @@ export default class NimblePicker extends React.PureComponent {
   }
 
   getCategories() {
-      return this.categories
+    return this.categories
   }
 
   setAnchorsRef(c) {
@@ -393,10 +393,13 @@ export default class NimblePicker extends React.PureComponent {
 
   setScrollRef(c) {
     this.scroll = c
-    const intersectionObserver = new IntersectionObserver(this.handleIntersection, {
-      root: c,
-      rootMargin: '0px 0px -100% 0px' // only observe the top edge of the scroll element
-    })
+    const intersectionObserver = new IntersectionObserver(
+      this.handleIntersection,
+      {
+        root: c,
+        rootMargin: '0px 0px -100% 0px', // only observe the top edge of the scroll element
+      },
+    )
     for (let i = 0, l = this.categories.length; i < l; i++) {
       const component = this.categoryRefs[`category-${i}`]
       const label = component.getLabelRef()
@@ -473,10 +476,7 @@ export default class NimblePicker extends React.PureComponent {
           autoFocus={autoFocus}
         />
 
-        <div
-          ref={this.setScrollRef}
-          className="emoji-mart-scroll"
-        >
+        <div ref={this.setScrollRef} className="emoji-mart-scroll">
           {this.getCategories().map((category, i) => {
             return (
               <Category

@@ -16,13 +16,7 @@ export default class Category extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    var {
-        name,
-        perLine,
-        native,
-        emojis,
-        emojiProps,
-      } = this.props,
+    var { name, perLine, native, emojis, emojiProps } = this.props,
       { skin, size, set } = emojiProps,
       {
         perLine: nextPerLine,
@@ -53,7 +47,7 @@ export default class Category extends React.Component {
     return shouldUpdate
   }
 
-  getLabelRef () {
+  getLabelRef() {
     return this.label
   }
 
@@ -108,14 +102,7 @@ export default class Category extends React.Component {
   }
 
   render() {
-    var {
-        id,
-        name,
-        emojiProps,
-        i18n,
-        notFound,
-        notFoundEmoji,
-      } = this.props,
+    var { id, name, emojiProps, i18n, notFound, notFoundEmoji } = this.props,
       emojis = this.getEmojis(),
       containerStyles = {}
 
@@ -134,10 +121,7 @@ export default class Category extends React.Component {
         aria-label={label}
         style={containerStyles}
       >
-        <div
-          data-name={name}
-          className="emoji-mart-category-label"
-        >
+        <div data-name={name} className="emoji-mart-category-label">
           <span
             ref={this.setLabelRef}
             data-category-id={id}
@@ -186,5 +170,5 @@ Category.propTypes /* remove-proptypes */ = {
 }
 
 Category.defaultProps = {
-  emojis: []
+  emojis: [],
 }
