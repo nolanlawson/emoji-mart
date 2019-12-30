@@ -15,6 +15,7 @@ import Category from '../category'
 import Preview from '../preview'
 import Search from '../search'
 import { PickerDefaultProps } from '../../utils/shared-default-props'
+import debounce from '../../utils/debounce'
 
 const I18N = {
   search: 'Search',
@@ -195,6 +196,7 @@ export default class NimblePicker extends React.PureComponent {
     this.setPreviewRef = this.setPreviewRef.bind(this)
     this.handleSkinChange = this.handleSkinChange.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
+    this.handleScroll = debounce(this.handleScroll.bind(this), 70)
     this.handleIntersection = this.handleIntersection.bind(this)
   }
 
@@ -271,6 +273,14 @@ export default class NimblePicker extends React.PureComponent {
     }
   }
 
+  handleScroll() {
+    const { scrollTop, clientHeight, scrollHeight } = this.scroll
+    if (scrollTop + clientHeight >= scrollHeight) {
+      const activeCategory = this.categories[this.categories.length - 1]
+      this.updateActiveCategory(activeCategory)
+    }
+  }
+
   handleIntersection(entries) {
     const entry = entries.find((entry) => entry.isIntersecting)
 
@@ -281,6 +291,10 @@ export default class NimblePicker extends React.PureComponent {
       const categoryId = entry.target.dataset.categoryId
       activeCategory = this.categories.find(({ id }) => id === categoryId)
     }
+    this.updateActiveCategory(activeCategory)
+  }
+
+  updateActiveCategory(activeCategory) {
     if (activeCategory) {
       const { anchors } = this
       const { name: categoryName } = activeCategory
@@ -391,6 +405,7 @@ export default class NimblePicker extends React.PureComponent {
 
   setScrollRef(c) {
     this.scroll = c
+    this.scroll.addEventListener('scroll', this.handleScroll)
     if (typeof IntersectionObserver !== 'undefined') {
       this.intersectionObserver = new IntersectionObserver(
         this.handleIntersection,
