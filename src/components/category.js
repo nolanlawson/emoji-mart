@@ -47,6 +47,10 @@ export default class Category extends React.Component {
     return shouldUpdate
   }
 
+  getContainerRef() {
+    return this.container
+  }
+
   getLabelRef() {
     return this.label
   }

@@ -310,21 +310,17 @@ export default class NimblePicker extends React.PureComponent {
   }
 
   handleAnchorClick(category, i) {
-    var component = this.categoryRefs[`category-${i}`],
-      { scroll, anchors } = this,
-      scrollToComponent = null
-
-    scrollToComponent = () => {
+    const component = this.categoryRefs[`category-${i}`]
+    const { scroll } = this
+    const scrollToComponent = () => {
       if (component) {
-        let { top } = component
-
         if (category.first) {
-          top = 0
+          scroll.scrollTop = 0
         } else {
-          top += 1
+          const container = component.getContainerRef()
+          container.scrollIntoView()
+          scroll.scrollTop += 1
         }
-
-        scroll.scrollTop = top
       }
     }
 
