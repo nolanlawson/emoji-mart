@@ -217,7 +217,6 @@ export default class NimblePicker extends React.PureComponent {
 
   componentDidMount() {
     if (this.state.firstRender) {
-      this.testStickyPosition()
       this.firstRenderTimeout = setTimeout(() => {
         this.setState({ firstRender: false })
       }, 60)
@@ -234,18 +233,6 @@ export default class NimblePicker extends React.PureComponent {
 
     clearTimeout(this.leaveTimeout)
     clearTimeout(this.firstRenderTimeout)
-  }
-
-  testStickyPosition() {
-    const stickyTestElement = document.createElement('div')
-
-    const prefixes = ['', '-webkit-', '-ms-', '-moz-', '-o-']
-
-    prefixes.forEach(
-      (prefix) => (stickyTestElement.style.position = `${prefix}sticky`),
-    )
-
-    this.hasStickyPosition = !!stickyTestElement.style.position.length
   }
 
   handleEmojiOver(emoji) {
@@ -579,7 +566,6 @@ export default class NimblePicker extends React.PureComponent {
                 emojis={category.emojis}
                 perLine={perLine}
                 native={native}
-                hasStickyPosition={this.hasStickyPosition}
                 data={this.data}
                 i18n={this.i18n}
                 recent={

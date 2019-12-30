@@ -5,6 +5,7 @@ import frequently from '../utils/frequently'
 import { getData } from '../utils'
 import NimbleEmoji from './emoji/nimble-emoji'
 import NotFound from './not-found'
+import hasStickyPosition from '../utils/has-sticky-position'
 
 export default class Category extends React.Component {
   constructor(props) {
@@ -16,10 +17,12 @@ export default class Category extends React.Component {
   }
 
   componentDidMount() {
-    this.margin = 0
-    this.minMargin = 0
+    if (!hasStickyPosition()) {
+      this.margin = 0
+      this.minMargin = 0
 
-    this.memoizeSize()
+      this.memoizeSize()
+    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -27,7 +30,6 @@ export default class Category extends React.Component {
         name,
         perLine,
         native,
-        hasStickyPosition,
         emojis,
         emojiProps,
       } = this.props,
@@ -35,7 +37,6 @@ export default class Category extends React.Component {
       {
         perLine: nextPerLine,
         native: nextNative,
-        hasStickyPosition: nextHasStickyPosition,
         emojis: nextEmojis,
         emojiProps: nextEmojiProps,
       } = nextProps,
@@ -54,8 +55,7 @@ export default class Category extends React.Component {
       skin != nextSkin ||
       size != nextSize ||
       native != nextNative ||
-      set != nextSet ||
-      hasStickyPosition != nextHasStickyPosition
+      set != nextSet
     ) {
       shouldUpdate = true
     }
@@ -64,39 +64,41 @@ export default class Category extends React.Component {
   }
 
   memoizeSize() {
-    if (!this.container) {
-      // probably this is a test environment, e.g. jest
-      this.top = 0
-      this.maxMargin = 0
-      return
-    }
-    var parent = this.container.parentElement
-    var { top, height } = this.container.getBoundingClientRect()
-    var { top: parentTop } = parent.getBoundingClientRect()
-    var { height: labelHeight } = this.label.getBoundingClientRect()
+    if (!hasStickyPosition()) {
+      if (!this.container) {
+        // probably this is a test environment, e.g. jest
+        this.top = 0
+        this.maxMargin = 0
+        return
+      }
+      var parent = this.container.parentElement
+      var {top, height} = this.container.getBoundingClientRect()
+      var {top: parentTop} = parent.getBoundingClientRect()
+      var {height: labelHeight} = this.label.getBoundingClientRect()
 
-    this.top = top - parentTop + parent.scrollTop
+      this.top = top - parentTop + parent.scrollTop
 
-    if (height == 0) {
-      this.maxMargin = 0
-    } else {
-      this.maxMargin = height - labelHeight
+      if (height == 0) {
+        this.maxMargin = 0
+      } else {
+        this.maxMargin = height - labelHeight
+      }
     }
   }
 
   handleScroll(scrollTop) {
-    var margin = scrollTop - this.top
-    margin = margin < this.minMargin ? this.minMargin : margin
-    margin = margin > this.maxMargin ? this.maxMargin : margin
+    if (!hasStickyPosition()) {
+      var margin = scrollTop - this.top
+      margin = margin < this.minMargin ? this.minMargin : margin
+      margin = margin > this.maxMargin ? this.maxMargin : margin
 
-    if (margin == this.margin) return
+      if (margin == this.margin) return
 
-    if (!this.props.hasStickyPosition) {
       this.label.style.top = `${margin}px`
-    }
 
-    this.margin = margin
-    return true
+      this.margin = margin
+      return true
+    }
   }
 
   getEmojis() {
@@ -153,7 +155,6 @@ export default class Category extends React.Component {
     var {
         id,
         name,
-        hasStickyPosition,
         emojiProps,
         i18n,
         notFound,
@@ -170,7 +171,7 @@ export default class Category extends React.Component {
       }
     }
 
-    if (!hasStickyPosition) {
+    if (!hasStickyPosition()) {
       labelStyles = {
         height: 28,
       }
@@ -232,7 +233,6 @@ export default class Category extends React.Component {
 
 Category.propTypes /* remove-proptypes */ = {
   emojis: PropTypes.array,
-  hasStickyPosition: PropTypes.bool,
   name: PropTypes.string.isRequired,
   native: PropTypes.bool.isRequired,
   perLine: PropTypes.number.isRequired,
@@ -243,6 +243,5 @@ Category.propTypes /* remove-proptypes */ = {
 }
 
 Category.defaultProps = {
-  emojis: [],
-  hasStickyPosition: true,
+  emojis: []
 }
