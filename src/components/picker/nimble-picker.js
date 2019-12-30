@@ -68,7 +68,6 @@ export default class NimblePicker extends React.PureComponent {
     this.icons = deepMerge(icons, props.icons)
     this.state = {
       skin: props.skin || store.get('skin') || props.defaultSkin,
-      firstRender: true,
     }
 
     this.categories = []
@@ -189,8 +188,6 @@ export default class NimblePicker extends React.PureComponent {
     this.setSearchRef = this.setSearchRef.bind(this)
     this.handleSearch = this.handleSearch.bind(this)
     this.setScrollRef = this.setScrollRef.bind(this)
-    this.handleScroll = this.handleScroll.bind(this)
-    this.handleScrollPaint = this.handleScrollPaint.bind(this)
     this.handleEmojiOver = this.handleEmojiOver.bind(this)
     this.handleEmojiLeave = this.handleEmojiLeave.bind(this)
     this.handleEmojiClick = this.handleEmojiClick.bind(this)
@@ -198,6 +195,7 @@ export default class NimblePicker extends React.PureComponent {
     this.setPreviewRef = this.setPreviewRef.bind(this)
     this.handleSkinChange = this.handleSkinChange.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
+    this.handleIntersection = this.handleIntersection.bind(this)
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -215,24 +213,10 @@ export default class NimblePicker extends React.PureComponent {
     return state
   }
 
-  componentDidMount() {
-    if (this.state.firstRender) {
-      this.firstRenderTimeout = setTimeout(() => {
-        this.setState({ firstRender: false })
-      }, 60)
-    }
-  }
-
-  componentDidUpdate() {
-    this.updateCategoriesSize()
-    this.handleScroll()
-  }
-
   componentWillUnmount() {
     this.SEARCH_CATEGORY.emojis = null
 
     clearTimeout(this.leaveTimeout)
-    clearTimeout(this.firstRenderTimeout)
   }
 
   handleEmojiOver(emoji) {
@@ -277,17 +261,7 @@ export default class NimblePicker extends React.PureComponent {
 
     var component = this.categoryRefs['category-1']
     if (component) {
-      let maxMargin = component.maxMargin
-      component.forceUpdate()
-
       window.requestAnimationFrame(() => {
-        if (!this.scroll) return
-        component.memoizeSize()
-        if (maxMargin == component.maxMargin) return
-
-        this.updateCategoriesSize()
-        this.handleScrollPaint()
-
         if (this.SEARCH_CATEGORY.emojis) {
           component.updateDisplay('none')
         }
@@ -295,69 +269,24 @@ export default class NimblePicker extends React.PureComponent {
     }
   }
 
-  handleScroll() {
-    if (!this.waitingForPaint) {
-      this.waitingForPaint = true
-      window.requestAnimationFrame(this.handleScrollPaint)
-    }
-  }
-
-  handleScrollPaint() {
-    this.waitingForPaint = false
-
-    if (!this.scroll) {
-      return
-    }
+  handleIntersection(entries) {
+    const entry = entries.find(entry => entry.isIntersecting)
 
     let activeCategory = null
-
     if (this.SEARCH_CATEGORY.emojis) {
       activeCategory = this.SEARCH_CATEGORY
-    } else {
-      var target = this.scroll,
-        scrollTop = target.scrollTop,
-        scrollingDown = scrollTop > (this.scrollTop || 0),
-        minTop = 0
-
-      for (let i = 0, l = this.categories.length; i < l; i++) {
-        let ii = scrollingDown ? this.categories.length - 1 - i : i,
-          category = this.categories[ii],
-          component = this.categoryRefs[`category-${ii}`]
-
-        if (component) {
-          let active = component.handleScroll(scrollTop)
-
-          if (!minTop || component.top < minTop) {
-            if (component.top > 0) {
-              minTop = component.top
-            }
-          }
-
-          if (active && !activeCategory) {
-            activeCategory = category
-          }
-        }
-      }
-
-      if (scrollTop < minTop) {
-        activeCategory = this.categories.filter(
-          (category) => !(category.anchor === false),
-        )[0]
-      } else if (scrollTop + this.clientHeight >= this.scrollHeight) {
-        activeCategory = this.categories[this.categories.length - 1]
-      }
+    } else if (entry) {
+      const categoryId = entry.target.dataset.categoryId
+      activeCategory = this.categories.find(({ id }) => id === categoryId)
     }
-
     if (activeCategory) {
-      let { anchors } = this,
-        { name: categoryName } = activeCategory
+      const { anchors } = this
+      const  { name: categoryName } = activeCategory
 
-      if (anchors.state.selected != categoryName) {
+      if (anchors.state.selected !== categoryName) {
         anchors.setState({ selected: categoryName })
       }
     }
-
-    this.scrollTop = scrollTop
   }
 
   handleSearch(emojis) {
@@ -376,7 +305,6 @@ export default class NimblePicker extends React.PureComponent {
     if (this.scroll) {
       this.scroll.scrollTop = 0
     }
-    this.handleScroll()
   }
 
   handleAnchorClick(category, i) {
@@ -447,23 +375,8 @@ export default class NimblePicker extends React.PureComponent {
     }
   }
 
-  updateCategoriesSize() {
-    for (let i = 0, l = this.categories.length; i < l; i++) {
-      let component = this.categoryRefs[`category-${i}`]
-      if (component) component.memoizeSize()
-    }
-
-    if (this.scroll) {
-      let target = this.scroll
-      this.scrollHeight = target.scrollHeight
-      this.clientHeight = target.clientHeight
-    }
-  }
-
   getCategories() {
-    return this.state.firstRender
-      ? this.categories.slice(0, 3)
-      : this.categories
+      return this.categories
   }
 
   setAnchorsRef(c) {
@@ -480,6 +393,15 @@ export default class NimblePicker extends React.PureComponent {
 
   setScrollRef(c) {
     this.scroll = c
+    const intersectionObserver = new IntersectionObserver(this.handleIntersection, {
+      root: c,
+      rootMargin: '0px 0px -100% 0px' // only observe the top edge of the scroll element
+    })
+    for (let i = 0, l = this.categories.length; i < l; i++) {
+      const component = this.categoryRefs[`category-${i}`]
+      const label = component.getLabelRef()
+      intersectionObserver.observe(label)
+    }
   }
 
   setCategoryRef(name, c) {
@@ -554,7 +476,6 @@ export default class NimblePicker extends React.PureComponent {
         <div
           ref={this.setScrollRef}
           className="emoji-mart-scroll"
-          onScroll={this.handleScroll}
         >
           {this.getCategories().map((category, i) => {
             return (
@@ -593,6 +514,7 @@ export default class NimblePicker extends React.PureComponent {
                 }}
                 notFound={notFound}
                 notFoundEmoji={notFoundEmoji}
+                intersectionObserver={this.intersectionObserver}
               />
             )
           })}

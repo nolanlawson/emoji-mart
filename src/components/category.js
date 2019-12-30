@@ -5,7 +5,6 @@ import frequently from '../utils/frequently'
 import { getData } from '../utils'
 import NimbleEmoji from './emoji/nimble-emoji'
 import NotFound from './not-found'
-import hasStickyPosition from '../utils/has-sticky-position'
 
 export default class Category extends React.Component {
   constructor(props) {
@@ -14,15 +13,6 @@ export default class Category extends React.Component {
     this.data = props.data
     this.setContainerRef = this.setContainerRef.bind(this)
     this.setLabelRef = this.setLabelRef.bind(this)
-  }
-
-  componentDidMount() {
-    if (!hasStickyPosition()) {
-      this.margin = 0
-      this.minMargin = 0
-
-      this.memoizeSize()
-    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -63,42 +53,8 @@ export default class Category extends React.Component {
     return shouldUpdate
   }
 
-  memoizeSize() {
-    if (!hasStickyPosition()) {
-      if (!this.container) {
-        // probably this is a test environment, e.g. jest
-        this.top = 0
-        this.maxMargin = 0
-        return
-      }
-      var parent = this.container.parentElement
-      var {top, height} = this.container.getBoundingClientRect()
-      var {top: parentTop} = parent.getBoundingClientRect()
-      var {height: labelHeight} = this.label.getBoundingClientRect()
-
-      this.top = top - parentTop + parent.scrollTop
-
-      if (height == 0) {
-        this.maxMargin = 0
-      } else {
-        this.maxMargin = height - labelHeight
-      }
-    }
-  }
-
-  handleScroll(scrollTop) {
-    if (!hasStickyPosition()) {
-      var margin = scrollTop - this.top
-      margin = margin < this.minMargin ? this.minMargin : margin
-      margin = margin > this.maxMargin ? this.maxMargin : margin
-
-      if (margin == this.margin) return
-
-      this.label.style.top = `${margin}px`
-
-      this.margin = margin
-      return true
-    }
+  getLabelRef () {
+    return this.label
   }
 
   getEmojis() {
@@ -161,23 +117,11 @@ export default class Category extends React.Component {
         notFoundEmoji,
       } = this.props,
       emojis = this.getEmojis(),
-      labelStyles = {},
-      labelSpanStyles = {},
       containerStyles = {}
 
     if (!emojis) {
       containerStyles = {
         display: 'none',
-      }
-    }
-
-    if (!hasStickyPosition()) {
-      labelStyles = {
-        height: 28,
-      }
-
-      labelSpanStyles = {
-        position: 'absolute',
       }
     }
 
@@ -191,13 +135,12 @@ export default class Category extends React.Component {
         style={containerStyles}
       >
         <div
-          style={labelStyles}
           data-name={name}
           className="emoji-mart-category-label"
         >
           <span
-            style={labelSpanStyles}
             ref={this.setLabelRef}
+            data-category-id={id}
             aria-hidden={true /* already labeled by the section aria-label */}
           >
             {label}
