@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 import * as icons from '../../svgs'
 import store from '../../utils/store'
 import frequently from '../../utils/frequently'
+import debounce from '../../utils/debounce'
 import { deepMerge, measureScrollbar, getSanitizedData } from '../../utils'
 import { uncompress } from '../../utils/data'
 import { PickerPropTypes } from '../../utils/shared-props'
@@ -195,8 +196,8 @@ export default class NimblePicker extends React.PureComponent {
     this.setPreviewRef = this.setPreviewRef.bind(this)
     this.handleSkinChange = this.handleSkinChange.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
-    this.handleCategoryIntersection = this.handleCategoryIntersection.bind(this)
-    this.handleSentinelIntersection = this.handleSentinelIntersection.bind(this)
+    this.handleIntersection = this.handleIntersection.bind(this)
+    this.handleScroll = debounce(this.handleScroll.bind(this), 50)
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -214,15 +215,22 @@ export default class NimblePicker extends React.PureComponent {
     return state
   }
 
+  componentDidUpdate() {
+    this.handleScroll()
+  }
+
   componentWillUnmount() {
     this.SEARCH_CATEGORY.emojis = null
     clearTimeout(this.leaveTimeout)
     console.log('unmount')
-    if (this.categoryObserver) {
-      this.categoryObserver.disconnect()
+    if (this.topEdgeObserver) {
+      this.topEdgeObserver.disconnect()
     }
-    if (this.sentinelObserver) {
-      this.sentinelObserver.disconnect()
+    if (this.bottomEdgeObserver) {
+      this.bottomEdgeObserver.disconnect()
+    }
+    if (this.scroll) {
+      this.scroll.removeEventListener('scroll', this.handleScroll)
     }
   }
 
@@ -276,8 +284,21 @@ export default class NimblePicker extends React.PureComponent {
     }
   }
 
-  handleCategoryIntersection(entries) {
-    console.log('handleCategoryIntersection')
+  handleScroll() {
+    console.log('handleScroll')
+    const {scrollTop, clientHeight, scrollHeight} = this.scroll
+    if (scrollTop === 0) {
+      const activeCategory = this.categories[1]
+      this.updateActiveCategory(activeCategory)
+    } else if (scrollTop + clientHeight >= scrollHeight) {
+      const activeCategory = this.categories[this.categories.length - 1]
+      this.updateActiveCategory(activeCategory)
+    }
+  }
+
+  handleIntersection(entries) {
+    console.log('handleIntersection')
+
     const entry = entries.find((entry) => entry.isIntersecting)
 
     let activeCategory = null
@@ -286,22 +307,6 @@ export default class NimblePicker extends React.PureComponent {
     } else if (entry) {
       const categoryId = entry.target.dataset.categoryId
       activeCategory = this.categories.find(({ id }) => id === categoryId)
-    }
-    console.log('activeCategory', activeCategory && activeCategory.name)
-    this.updateActiveCategory(activeCategory)
-  }
-
-  handleSentinelIntersection(entries) {
-    console.log('handleSentinelIntersection')
-    console.log('entries', entries)
-    const entry = entries.find((entry) => entry.isIntersecting)
-
-    let activeCategory = null
-    if (this.SEARCH_CATEGORY.emojis) {
-      activeCategory = this.SEARCH_CATEGORY
-    } else if (entry) {
-      const categoryId = entry.target.dataset.categoryId
-      activeCategory = this.categories.find(({id}) => id === categoryId)
     }
     console.log('activeCategory', activeCategory && activeCategory.name)
     this.updateActiveCategory(activeCategory)
@@ -418,33 +423,30 @@ export default class NimblePicker extends React.PureComponent {
 
   setScrollRef(c) {
     this.scroll = c
-    this.createCategoryObserver()
-    this.createSentinelObserver()
+    if (this.scroll) {
+      this.scroll.addEventListener('scroll', this.handleScroll)
+    }
+    this.createIntersectionObservers()
   }
 
-  setSentinelRef(c) {
-    this.sentinel = c
-    this.createSentinelObserver()
-  }
-
-  createCategoryObserver () {
-    console.log('createCategoryObserver', this.scroll)
+  createIntersectionObservers () {
+    console.log('createIntersectionObservers', this.scroll)
     if (this.scroll && typeof IntersectionObserver !== 'undefined') {
-      if (this.categoryObserver) {
-        this.categoryObserver.disconnect()
+      if (this.topEdgeObserver) {
+        this.topEdgeObserver.disconnect()
       }
-      this.categoryObserver = new IntersectionObserver(
-        this.handleCategoryIntersection,
+      this.topEdgeObserver = new IntersectionObserver(
+        this.handleIntersection,
         {
           root: this.scroll,
           rootMargin: '0px 0px -100% 0px', // only observe the top edge of the scroll element
         },
       )
-      if (this.sentinelObserver) {
-        this.sentinelObserver.disconnect()
+      if (this.bottomEdgeObserver) {
+        this.bottomEdgeObserver.disconnect()
       }
-      this.sentinelObserver = new IntersectionObserver(
-        this.handleSentinelIntersection,
+      this.bottomEdgeObserver = new IntersectionObserver(
+        this.handleIntersection,
         {
           root: this.scroll,
           rootMargin: '-100% 0px 0px 0px' // only observe the bottom edge
@@ -453,24 +455,9 @@ export default class NimblePicker extends React.PureComponent {
       for (let i = 0, l = this.categories.length; i < l; i++) {
         const component = this.categoryRefs[`category-${i}`]
         const container = component.getContainerRef()
-        this.categoryObserver.observe(container)
-        this.sentinelObserver.observe(container)
+        this.topEdgeObserver.observe(container)
+        this.bottomEdgeObserver.observe(container)
       }
-    }
-  }
-
-  createSentinelObserver () {
-    console.log('createSentinelObserver', this.scroll, this.sentinel)
-    if (this.scroll && this.sentinel && typeof IntersectionObserver !== 'undefined') {
-      if (this.sentinelObserver) {
-        this.sentinelObserver.disconnect()
-      }
-      // The sentinel is used to handle a special case - when we scroll to the bottom of the
-      // scroll container, then the last category should be the one that is active.
-      this.sentinelObserver = new IntersectionObserver(this.handleSentinelIntersection, {
-        root: this.scroll
-      })
-      this.sentinelObserver.observe(this.sentinel)
     }
   }
 
