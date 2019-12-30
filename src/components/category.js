@@ -13,6 +13,7 @@ export default class Category extends React.Component {
     this.data = props.data
     this.setContainerRef = this.setContainerRef.bind(this)
     this.setLabelRef = this.setLabelRef.bind(this)
+    this.setSentinelRef = this.setSentinelRef.bind(this)
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -53,6 +54,10 @@ export default class Category extends React.Component {
 
   getLabelRef() {
     return this.label
+  }
+
+  getSentinelRef() {
+    return this.sentinel
   }
 
   getEmojis() {
@@ -105,6 +110,10 @@ export default class Category extends React.Component {
     this.label = c
   }
 
+  setSentinelRef(c) {
+    this.sentinel = c
+  }
+
   render() {
     var { id, name, emojiProps, i18n, notFound, notFoundEmoji } = this.props,
       emojis = this.getEmojis(),
@@ -124,12 +133,13 @@ export default class Category extends React.Component {
         className="emoji-mart-category"
         aria-label={label}
         style={containerStyles}
+        data-category-id={id}
       >
         <div data-name={name} className="emoji-mart-category-label">
           <span
             ref={this.setLabelRef}
-            data-category-id={id}
             aria-hidden={true /* already labeled by the section aria-label */}
+            data-category-id={id}
           >
             {label}
           </span>
@@ -157,6 +167,11 @@ export default class Category extends React.Component {
             emojiProps={emojiProps}
           />
         )}
+        <span
+          className="emoji-mart-sentinel"
+          data-category-id={id}
+          ref={this.setSentinelRef}>
+          </span>
       </section>
     )
   }

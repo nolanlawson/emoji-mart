@@ -188,7 +188,6 @@ export default class NimblePicker extends React.PureComponent {
     this.setSearchRef = this.setSearchRef.bind(this)
     this.handleSearch = this.handleSearch.bind(this)
     this.setScrollRef = this.setScrollRef.bind(this)
-    this.setSentinelRef = this.setSentinelRef.bind(this)
     this.handleEmojiOver = this.handleEmojiOver.bind(this)
     this.handleEmojiLeave = this.handleEmojiLeave.bind(this)
     this.handleEmojiClick = this.handleEmojiClick.bind(this)
@@ -288,16 +287,24 @@ export default class NimblePicker extends React.PureComponent {
       const categoryId = entry.target.dataset.categoryId
       activeCategory = this.categories.find(({ id }) => id === categoryId)
     }
+    console.log('activeCategory', activeCategory && activeCategory.name)
     this.updateActiveCategory(activeCategory)
   }
 
   handleSentinelIntersection(entries) {
     console.log('handleSentinelIntersection')
-    if (entries[0].isIntersecting) {
-      this.updateActiveCategory(this.categories[this.categories.length - 1])
-    } else {
-      this.updateActiveCategory(this.categories[this.categories.length - 2])
+    console.log('entries', entries)
+    const entry = entries.find((entry) => entry.isIntersecting)
+
+    let activeCategory = null
+    if (this.SEARCH_CATEGORY.emojis) {
+      activeCategory = this.SEARCH_CATEGORY
+    } else if (entry) {
+      const categoryId = entry.target.dataset.categoryId
+      activeCategory = this.categories.find(({id}) => id === categoryId)
     }
+    console.log('activeCategory', activeCategory && activeCategory.name)
+    this.updateActiveCategory(activeCategory)
   }
 
   updateActiveCategory(activeCategory) {
@@ -433,10 +440,21 @@ export default class NimblePicker extends React.PureComponent {
           rootMargin: '0px 0px -100% 0px', // only observe the top edge of the scroll element
         },
       )
+      if (this.sentinelObserver) {
+        this.sentinelObserver.disconnect()
+      }
+      this.sentinelObserver = new IntersectionObserver(
+        this.handleSentinelIntersection,
+        {
+          root: this.scroll,
+          rootMargin: '-100% 0px 0px 0px' // only observe the bottom edge
+        }
+      )
       for (let i = 0, l = this.categories.length; i < l; i++) {
         const component = this.categoryRefs[`category-${i}`]
-        const label = component.getLabelRef()
-        this.categoryObserver.observe(label)
+        const container = component.getContainerRef()
+        this.categoryObserver.observe(container)
+        this.sentinelObserver.observe(container)
       }
     }
   }
@@ -566,10 +584,6 @@ export default class NimblePicker extends React.PureComponent {
               />
             )
           })}
-          <span
-            className="emoji-mart-sentinel"
-                ref={this.setSentinelRef}>
-          </span>
         </div>
 
         {(showPreview || showSkinTones) && (
