@@ -6,7 +6,6 @@ import PropTypes from 'prop-types'
 import * as icons from '../../svgs'
 import store from '../../utils/store'
 import frequently from '../../utils/frequently'
-import debounce from '../../utils/debounce'
 import { deepMerge, measureScrollbar, getSanitizedData } from '../../utils'
 import { uncompress } from '../../utils/data'
 import { PickerPropTypes } from '../../utils/shared-props'
@@ -197,7 +196,7 @@ export default class NimblePicker extends React.PureComponent {
     this.handleSkinChange = this.handleSkinChange.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
     this.handleIntersection = this.handleIntersection.bind(this)
-    this.handleScroll = debounce(this.handleScroll.bind(this), 50)
+    this.handleScroll = this.handleScroll.bind(this)
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -284,8 +283,19 @@ export default class NimblePicker extends React.PureComponent {
     }
   }
 
-  handleScroll() {
-    console.log('handleScroll')
+  handleScroll () {
+    // delay so that the scroll handler explicitly happens after intersection observer handlers,
+    // to avoid timing issues with clicking anchor links
+    requestAnimationFrame(() => requestAnimationFrame(() => this.handleScrollDelayed()))
+  }
+
+  handleScrollDelayed() {
+    console.log('handleScrollDelayed')
+    if (this.SEARCH_CATEGORY.emojis) {
+      this.updateActiveCategory(this.SEARCH_CATEGORY)
+      return
+    }
+
     const {scrollTop, clientHeight, scrollHeight} = this.scroll
     if (scrollTop === 0) {
       const activeCategory = this.categories[1]
