@@ -283,10 +283,12 @@ export default class NimblePicker extends React.PureComponent {
     }
   }
 
-  handleScroll () {
+  handleScroll() {
     // delay so that the scroll handler explicitly happens after intersection observer handlers,
     // to avoid timing issues with clicking anchor links
-    requestAnimationFrame(() => requestAnimationFrame(() => this.handleScrollDelayed()))
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => this.handleScrollDelayed()),
+    )
   }
 
   handleScrollDelayed() {
@@ -296,7 +298,7 @@ export default class NimblePicker extends React.PureComponent {
       return
     }
 
-    const {scrollTop, clientHeight, scrollHeight} = this.scroll
+    const { scrollTop, clientHeight, scrollHeight } = this.scroll
     if (scrollTop === 0) {
       const activeCategory = this.categories[1]
       this.updateActiveCategory(activeCategory)
@@ -439,19 +441,16 @@ export default class NimblePicker extends React.PureComponent {
     this.createIntersectionObservers()
   }
 
-  createIntersectionObservers () {
+  createIntersectionObservers() {
     console.log('createIntersectionObservers', this.scroll)
     if (this.scroll && typeof IntersectionObserver !== 'undefined') {
       if (this.topEdgeObserver) {
         this.topEdgeObserver.disconnect()
       }
-      this.topEdgeObserver = new IntersectionObserver(
-        this.handleIntersection,
-        {
-          root: this.scroll,
-          rootMargin: '0px 0px -100% 0px', // only observe the top edge of the scroll element
-        },
-      )
+      this.topEdgeObserver = new IntersectionObserver(this.handleIntersection, {
+        root: this.scroll,
+        rootMargin: '0px 0px -100% 0px', // only observe the top edge of the scroll element
+      })
       if (this.bottomEdgeObserver) {
         this.bottomEdgeObserver.disconnect()
       }
@@ -459,8 +458,8 @@ export default class NimblePicker extends React.PureComponent {
         this.handleIntersection,
         {
           root: this.scroll,
-          rootMargin: '-100% 0px 0px 0px' // only observe the bottom edge
-        }
+          rootMargin: '-100% 0px 0px 0px', // only observe the bottom edge
+        },
       )
       for (let i = 0, l = this.categories.length; i < l; i++) {
         const component = this.categoryRefs[`category-${i}`]
